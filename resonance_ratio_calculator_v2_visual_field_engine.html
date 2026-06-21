@@ -1,346 +1,317 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Resonance Ratio Calculator v2 — Visual Field Engine</title>
-  <style>
-    :root {
-      --bg: #070b14;
-      --panel: #111a2b;
-      --ink: #e7f0ff;
-      --muted: #9bb2d9;
-      --accent: #36e4ff;
-      --accent2: #9a7dff;
-      --ok: #66ffb3;
-      --warn: #ffd26a;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font: 15px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--ink);
-      background: radial-gradient(1200px 900px at 20% 10%, #13213f 0%, var(--bg) 55%);
-    }
-    .app {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 16px;
-      display: grid;
-      gap: 14px;
-      grid-template-columns: 1.1fr 1fr;
-    }
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border: 1px solid rgba(159,195,255,.24);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, .24);
-    }
-    h1, h2 { margin: 0 0 10px; font-weight: 700; }
-    h1 { font-size: 1.2rem; color: var(--accent); }
-    h2 { font-size: 1rem; color: #d7e6ff; }
-    .controls { display: grid; gap: 10px; }
-    .row { display: grid; gap: 8px; grid-template-columns: 1fr 120px; align-items: center; }
-    label { color: var(--muted); font-size: .92rem; }
-    input, select {
-      width: 100%;
-      background: #0b1323;
-      color: var(--ink);
-      border: 1px solid #314667;
-      border-radius: 8px;
-      padding: 7px 9px;
-    }
-    .metrics {
-      margin-top: 8px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 8px;
-    }
-    .metric {
-      background: #091222;
-      border: 1px solid #2a436d;
-      border-radius: 10px;
-      padding: 9px;
-    }
-    .metric b { display: block; color: var(--accent); font-size: 1rem; }
-    .bars { display: grid; gap: 10px; margin-top: 8px; }
-    .barWrap {
-      background: #0a1221;
-      border: 1px solid #2a436d;
-      border-radius: 10px;
-      padding: 6px;
-    }
-    .bar {
-      height: 16px;
-      border-radius: 8px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      width: 0%;
-      transition: width .35s ease;
-    }
-    .barLabel { color: var(--muted); font-size: .86rem; margin-bottom: 5px; display: flex; justify-content: space-between; gap: 10px; }
-    .canvasWrap {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: 1fr;
-    }
-    canvas {
-      width: 100%;
-      height: 170px;
-      background: #070f1f;
-      border: 1px solid #2a436d;
-      border-radius: 10px;
-    }
-    .transformer {
-      background: #080f1d;
-      border: 1px solid #2a436d;
-      border-radius: 10px;
-      padding: 10px;
-    }
-    .coil {
-      height: 18px;
-      border-radius: 999px;
-      border: 2px dashed #7dc5ff;
-      position: relative;
-      overflow: hidden;
-      margin: 6px 0;
-    }
-    .coil::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(90deg, transparent 0 8px, rgba(83,247,255,.3) 8px 12px);
-      animation: flow 1.2s linear infinite;
-    }
-    @keyframes flow { from { transform: translateX(0); } to { transform: translateX(20px); } }
-    .tag {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid #3d5f90;
-      color: #d6e9ff;
-      font-size: .78rem;
-      margin-right: 6px;
-    }
-    .skinDepthRing {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      margin: 2px auto 6px;
-      background:
-        radial-gradient(circle at center, #071024 0 34%, transparent 34%),
-        conic-gradient(var(--ok) 0turn, var(--warn) .5turn, #ff6f87 1turn);
-      border: 1px solid #36567f;
-      position: relative;
-      overflow: hidden;
-    }
-    .skinDepthFill {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, transparent 0 34%, rgba(7,16,36,.88) 34% 100%);
-      transform: scale(.7);
-      transition: transform .3s ease;
-    }
-    .foot { color: #90a8d2; font-size: .82rem; margin-top: 8px; }
-    @media (max-width: 860px) {
-      .app { grid-template-columns: 1fr; padding: 12px; }
-      .row { grid-template-columns: 1fr; }
-      canvas { height: 150px; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resonance Ratio Calculator v2 — Visual Field Engine</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#121a2f;
+    --panel2:#18223c;
+    --text:#eef3ff;
+    --muted:#9fb0d0;
+    --line:#33466d;
+    --accent:#7aa2ff;
+    --good:#8ee6b0;
+    --warn:#ffd27a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,#09101f,#111a31);
+    color:var(--text);
+  }
+  .wrap{max-width:1200px;margin:auto;padding:20px}
+  h1{font-size:clamp(1.6rem,4vw,2.6rem);margin:0 0 6px}
+  .sub{color:var(--muted);margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  label{display:block;color:var(--muted);font-size:.9rem;margin-bottom:6px}
+  input,select,button{
+    width:100%;
+    padding:11px 12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#0d1529;
+    color:var(--text);
+    font-size:1rem;
+  }
+  button{
+    background:linear-gradient(90deg,#5d80ff,#8d6cff);
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .result{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  .result:last-child{border-bottom:none}
+  .result span:first-child{color:var(--muted)}
+  .viz-title{margin:0 0 10px;font-size:1.05rem}
+  svg{width:100%;height:auto;display:block}
+  .coil-line{fill:none;stroke:var(--accent);stroke-width:5}
+  .coil-line.secondary{stroke:#8ee6b0}
+  .field{fill:none;stroke:#7aa2ff;stroke-width:2;opacity:.35}
+  .pulse{animation:pulse 1.8s ease-in-out infinite;transform-origin:center}
+  @keyframes pulse{0%,100%{opacity:.25;transform:scale(.9)}50%{opacity:1;transform:scale(1.08)}}
+  .charge{animation:charge 2.4s linear infinite}
+  @keyframes charge{0%{transform:translateX(0)}50%{transform:translateX(110px)}100%{transform:translateX(0)}}
+  .energy-dot{fill:#ffd27a}
+  .bar{height:18px;background:#0d1529;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+  .bar > div{height:100%;background:linear-gradient(90deg,#5d80ff,#8ee6b0);width:50%}
+  .scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem;margin-top:5px}
+  .ring-wrap{display:grid;place-items:center;min-height:240px}
+  .ring{
+    width:190px;height:190px;border-radius:50%;
+    position:relative;
+    background:conic-gradient(#7aa2ff var(--fill,40%),#24314f 0);
+    display:grid;place-items:center;
+  }
+  .ring::after{
+    content:"";
+    width:135px;height:135px;border-radius:50%;
+    background:#111a31;border:1px solid var(--line);
+    position:absolute;
+  }
+  .ring-text{position:relative;z-index:2;text-align:center}
+  .big{font-size:1.35rem;font-weight:800}
+  .small{font-size:.8rem;color:var(--muted)}
+  .note{font-size:.84rem;color:var(--muted);line-height:1.45}
+  code{background:#0b1223;padding:2px 5px;border-radius:5px}
+</style>
 </head>
 <body>
-  <main class="app">
+<div class="wrap">
+  <h1>Resonance Ratio Calculator v2</h1>
+  <div class="sub">Visual Field Engine — symbolic mapping plus measurable RF engineering</div>
+
+  <div class="card">
+    <div class="controls">
+      <div>
+        <label for="source">Source material</label>
+        <select id="source"></select>
+      </div>
+      <div>
+        <label for="load">Load / reservoir</label>
+        <select id="load"></select>
+      </div>
+      <div>
+        <label for="L">Inductance (µH)</label>
+        <input id="L" type="number" min="0.001" step="0.001" value="10">
+      </div>
+      <div>
+        <label for="C">Capacitance (pF)</label>
+        <input id="C" type="number" min="0.001" step="0.001" value="100">
+      </div>
+      <div>
+        <label for="ratio">Transformer turns ratio</label>
+        <input id="ratio" type="number" min="1" step="1" value="152">
+      </div>
+      <div style="align-self:end">
+        <button id="calcBtn">Calculate Visual Field</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:16px">
     <section class="card">
-      <h1>Resonance Ratio Calculator v2 — Visual Field Engine</h1>
-      <div class="controls">
-        <div class="row">
-          <label for="frequency">Drive Frequency (kHz)</label>
-          <input id="frequency" type="number" min="1" max="50000" value="455" />
-        </div>
-        <div class="row">
-          <label for="inductance">L (µH)</label>
-          <input id="inductance" type="number" min="0.001" step="0.001" value="120" />
-        </div>
-        <div class="row">
-          <label for="capacitance">C (pF)</label>
-          <input id="capacitance" type="number" min="0.001" step="0.001" value="820" />
-        </div>
-        <div class="row">
-          <label for="material">Conductor</label>
-          <select id="material">
-            <option>Silver</option>
-            <option>Nickel</option>
-            <option>Molybdenum</option>
-            <option>Palladium</option>
-            <option>Cadmium</option>
-            <option>Indium</option>
-            <option>Lithium</option>
-          </select>
-        </div>
-        <div class="row">
-          <label for="gas">Discharge Gas Correction</label>
-          <select id="gas">
-            <option value="none">None</option>
-            <option value="Neon">Neon</option>
-            <option value="Argon">Argon</option>
-          </select>
-        </div>
-      </div>
-      <div class="metrics">
-        <div class="metric"><span>LC Resonant Frequency</span><b id="f0"></b></div>
-        <div class="metric"><span>Resonance Ratio (f/f₀)</span><b id="ratio"></b></div>
-        <div class="metric"><span>Wavelength λ</span><b id="lambda"></b></div>
-        <div class="metric"><span>Skin Depth δ</span><b id="skin"></b></div>
-      </div>
-      <div class="bars">
-        <div class="barWrap">
-          <div class="barLabel"><span>Frequency Bar</span><span id="fBarText"></span></div>
-          <div class="bar" id="frequencyBar"></div>
-        </div>
-        <div class="barWrap">
-          <div class="barLabel"><span>Wavelength Bar</span><span id="wBarText"></span></div>
-          <div class="bar" id="wavelengthBar"></div>
-        </div>
-      </div>
-      <p class="foot">Transformer view fixed at <strong>152:1</strong> with impedance ratio <strong>N² = 23,104:1</strong>.</p>
+      <h2 class="viz-title">Engineering Outputs</h2>
+      <div class="result"><span>LC resonance</span><strong id="freqOut">—</strong></div>
+      <div class="result"><span>Wavelength</span><strong id="waveOut">—</strong></div>
+      <div class="result"><span>Turns ratio</span><strong id="turnsOut">—</strong></div>
+      <div class="result"><span>Impedance ratio</span><strong id="impOut">—</strong></div>
+      <div class="result"><span>Skin depth</span><strong id="skinOut">—</strong></div>
     </section>
 
-    <section class="card canvasWrap">
-      <div class="transformer">
-        <h2>LC Tank + Transformer Visual</h2>
-        <span class="tag">Primary: 152 turns</span>
-        <span class="tag">Secondary: 1 turn</span>
-        <span class="tag">N² = 23,104:1</span>
-        <div class="coil"></div>
-        <div class="coil"></div>
-      </div>
-      <canvas id="waveCanvas" aria-label="Animated wavelength graphic"></canvas>
-      <div class="transformer">
-        <h2>Skin-Depth Ring</h2>
-        <div class="skinDepthRing">
-          <div class="skinDepthFill" id="skinDepthFill"></div>
-        </div>
-        <div class="metric" style="margin-top:6px"><span>Gas Correction Factor</span><b id="gasFactor"></b></div>
-      </div>
+    <section class="card">
+      <h2 class="viz-title">LC Tank Animation</h2>
+      <svg viewBox="0 0 360 190" aria-label="LC tank animation">
+        <rect x="24" y="64" width="62" height="62" rx="8" fill="#0d1529" stroke="#7aa2ff"/>
+        <line x1="45" y1="72" x2="45" y2="118" stroke="#eef3ff" stroke-width="4"/>
+        <line x1="64" y1="72" x2="64" y2="118" stroke="#eef3ff" stroke-width="4"/>
+        <text x="55" y="148" text-anchor="middle" fill="#9fb0d0">Capacitor</text>
+
+        <path d="M118 95 C130 62,142 128,154 95 S178 62,190 95 S214 128,226 95 S250 62,262 95"
+              class="coil-line"/>
+        <text x="190" y="148" text-anchor="middle" fill="#9fb0d0">Inductor</text>
+
+        <line x1="86" y1="95" x2="118" y2="95" stroke="#eef3ff" stroke-width="3"/>
+        <line x1="262" y1="95" x2="330" y2="95" stroke="#eef3ff" stroke-width="3"/>
+        <line x1="330" y1="95" x2="330" y2="36" stroke="#eef3ff" stroke-width="3"/>
+        <line x1="330" y1="36" x2="55" y2="36" stroke="#eef3ff" stroke-width="3"/>
+        <line x1="55" y1="36" x2="55" y2="64" stroke="#eef3ff" stroke-width="3"/>
+
+        <circle cx="98" cy="95" r="7" class="energy-dot charge"/>
+        <ellipse cx="190" cy="95" rx="72" ry="48" class="field pulse"/>
+        <ellipse cx="190" cy="95" rx="92" ry="66" class="field pulse" style="animation-delay:.3s"/>
+      </svg>
+      <div class="note">The animation represents idealized energy exchange between electric-field storage in the capacitor and magnetic-field storage in the inductor.</div>
     </section>
-  </main>
 
-  <script>
-    const MU0 = 4 * Math.PI * 1e-7;
-    const C0 = 299792458;
-    const materials = {
-      Silver: { rho: 1.59e-8, mur: 0.99998 },
-      Nickel: { rho: 6.99e-8, mur: 100 },
-      Molybdenum: { rho: 5.3e-8, mur: 1.0 },
-      Palladium: { rho: 1.05e-7, mur: 1.0 },
-      Cadmium: { rho: 7.4e-8, mur: 1.0 },
-      Indium: { rho: 8.37e-8, mur: 1.0 },
-      Lithium: { rho: 9.28e-8, mur: 1.000022 }
-    };
-    const gasFactors = { none: 1, Neon: 0.94, Argon: 0.89 };
+    <section class="card">
+      <h2 class="viz-title">152:1 Transformer Visual</h2>
+      <svg viewBox="0 0 360 220" aria-label="Transformer visualization">
+        <text x="85" y="26" text-anchor="middle" fill="#eef3ff">Silver signal</text>
+        <text x="275" y="26" text-anchor="middle" fill="#eef3ff">Nickel reservoir</text>
 
-    const ids = (name) => document.getElementById(name);
-    const frequency = ids("frequency");
-    const inductance = ids("inductance");
-    const capacitance = ids("capacitance");
-    const material = ids("material");
-    const gas = ids("gas");
-    const f0 = ids("f0");
-    const ratio = ids("ratio");
-    const lambda = ids("lambda");
-    const skin = ids("skin");
-    const gasFactor = ids("gasFactor");
-    const fBar = ids("frequencyBar");
-    const wBar = ids("wavelengthBar");
-    const fBarText = ids("fBarText");
-    const wBarText = ids("wBarText");
-    const skinDepthFill = ids("skinDepthFill");
-    const waveCanvas = ids("waveCanvas");
-    const ctx = waveCanvas.getContext("2d");
-    let phase = 0;
-    let wavePx = 80;
+        <path d="M68 55 C40 70,105 80,68 95 C40 110,105 120,68 135 C40 150,105 160,68 175"
+              class="coil-line"/>
+        <path d="M292 50 C242 60,335 70,292 80 C242 90,335 100,292 110 C242 120,335 130,292 140 C242 150,335 160,292 170 C242 180,335 190,292 200"
+              class="coil-line secondary"/>
 
-    function formatFreq(hz) {
-      return hz >= 1e6 ? `${(hz / 1e6).toFixed(3)} MHz` : `${(hz / 1e3).toFixed(3)} kHz`;
-    }
-    function formatMeters(m) {
-      if (m >= 1) return `${m.toFixed(3)} m`;
-      if (m >= 1e-3) return `${(m * 1e3).toFixed(3)} mm`;
-      return `${(m * 1e6).toFixed(3)} µm`;
-    }
-    function update() {
-      const fHz = Math.max(1, Number(frequency.value) || 1) * 1e3;
-      const lH = Math.max(1e-12, Number(inductance.value) || 1) * 1e-6;
-      const cF = Math.max(1e-15, Number(capacitance.value) || 1) * 1e-12;
-      const fRes = 1 / (2 * Math.PI * Math.sqrt(lH * cF));
-      const gasK = gasFactors[gas.value] || 1;
-      const corrF = fHz * gasK;
-      const lam = C0 / corrF;
-      const mat = materials[material.value];
-      const delta = Math.sqrt((2 * mat.rho) / (2 * Math.PI * corrF * MU0 * mat.mur));
-      const rr = fHz / fRes;
+        <rect x="158" y="48" width="18" height="154" rx="5" fill="#6c7690"/>
+        <rect x="184" y="48" width="18" height="154" rx="5" fill="#6c7690"/>
+        <path d="M92 110 C130 84,140 84,158 110" class="field pulse"/>
+        <path d="M202 110 C225 84,245 84,270 110" class="field pulse"/>
+      </svg>
+      <div class="result"><span>Turns ratio</span><strong id="ratioLabel">152:1</strong></div>
+      <div class="result"><span>N²</span><strong id="ratioSquared">23,104:1</strong></div>
+    </section>
 
-      f0.textContent = formatFreq(fRes);
-      ratio.textContent = rr.toFixed(6);
-      lambda.textContent = formatMeters(lam);
-      skin.textContent = formatMeters(delta);
-      gasFactor.textContent = `${gasK.toFixed(2)} × (${gas.value})`;
+    <section class="card">
+      <h2 class="viz-title">Wave / Wavelength Bar</h2>
+      <div class="result"><span>Frequency position</span><strong id="bandOut">—</strong></div>
+      <div class="bar"><div id="freqBar"></div></div>
+      <div class="scale"><span>1 kHz</span><span>1 MHz</span><span>1 GHz</span></div>
+      <svg viewBox="0 0 360 130" aria-label="Wave animation">
+        <path id="wavePath" d="" fill="none" stroke="#8ee6b0" stroke-width="4"/>
+      </svg>
+      <div class="note" id="waveLabel">Calculated wavelength will appear here.</div>
+    </section>
 
-      fBar.style.width = `${Math.min(100, (fHz / (5e7)) * 100)}%`;
-      wBar.style.width = `${Math.max(4, Math.min(100, (1 / (lam + 1)) * 120))}%`;
-      fBarText.textContent = formatFreq(fHz);
-      wBarText.textContent = formatMeters(lam);
+    <section class="card">
+      <h2 class="viz-title">Skin Depth Ring</h2>
+      <div class="ring-wrap">
+        <div class="ring" id="skinRing">
+          <div class="ring-text">
+            <div class="big" id="skinCenter">—</div>
+            <div class="small">RF penetration estimate</div>
+          </div>
+        </div>
+      </div>
+      <div class="note">For gases modeled as discharge media rather than conductors, skin depth is shown as not applicable.</div>
+    </section>
+  </div>
+</div>
 
-      const depthScale = Math.max(0.35, Math.min(0.95, 0.95 - Math.log10(delta * 1e6 + 1) / 8));
-      skinDepthFill.style.transform = `scale(${depthScale.toFixed(3)})`;
+<script>
+const materials = {
+  Ag: {name:"Silver", symbol:"Ag", conductivity:"Conductor", resistivity:1.59e-8},
+  Ni: {name:"Nickel", symbol:"Ni", conductivity:"Conductor", resistivity:6.99e-8},
+  Mo: {name:"Molybdenum", symbol:"Mo", conductivity:"Conductor", resistivity:5.34e-8},
+  Pd: {name:"Palladium", symbol:"Pd", conductivity:"Conductor", resistivity:1.05e-7},
+  Cd: {name:"Cadmium", symbol:"Cd", conductivity:"Conductor", resistivity:7.2e-8},
+  In: {name:"Indium", symbol:"In", conductivity:"Conductor", resistivity:8.37e-8},
+  Li: {name:"Lithium", symbol:"Li", conductivity:"Conductor", resistivity:9.28e-8},
+  Ne: {name:"Neon", symbol:"Ne", conductivity:"Insulator / discharge gas", resistivity:null},
+  Ar: {name:"Argon", symbol:"Ar", conductivity:"Insulator / discharge gas", resistivity:null}
+};
 
-      wavePx = Math.max(24, Math.min(250, lam * 30));
-    }
+const source = document.getElementById("source");
+const load = document.getElementById("load");
 
-    function drawWave() {
-      const { width, height } = waveCanvas;
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "#050b17";
-      ctx.fillRect(0, 0, width, height);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "#3ef3ff";
-      ctx.beginPath();
-      for (let x = 0; x <= width; x++) {
-        const y = height / 2 + Math.sin((x / wavePx) * Math.PI * 2 + phase) * (height * 0.24);
-        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
+for (const [key,m] of Object.entries(materials)) {
+  source.add(new Option(`${m.name} (${m.symbol})`, key));
+  load.add(new Option(`${m.name} (${m.symbol})`, key));
+}
+source.value = "Ag";
+load.value = "Ni";
 
-      ctx.strokeStyle = "#8f7aff";
-      ctx.beginPath();
-      for (let x = 0; x <= width; x++) {
-        const y = height / 2 + Math.sin((x / wavePx) * Math.PI * 2 + phase + Math.PI / 2) * (height * 0.14);
-        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
+function formatFrequency(f){
+  if (f >= 1e9) return `${(f/1e9).toFixed(3)} GHz`;
+  if (f >= 1e6) return `${(f/1e6).toFixed(3)} MHz`;
+  if (f >= 1e3) return `${(f/1e3).toFixed(3)} kHz`;
+  return `${f.toFixed(3)} Hz`;
+}
 
-      phase += 0.06;
-      requestAnimationFrame(drawWave);
-    }
+function formatLength(m){
+  if (m >= 1000) return `${(m/1000).toFixed(3)} km`;
+  if (m >= 1) return `${m.toFixed(3)} m`;
+  if (m >= 1e-3) return `${(m*1e3).toFixed(3)} mm`;
+  return `${(m*1e6).toFixed(3)} µm`;
+}
 
-    function resize() {
-      const ratio = window.devicePixelRatio || 1;
-      const w = Math.floor(waveCanvas.clientWidth * ratio);
-      const h = Math.floor(waveCanvas.clientHeight * ratio);
-      if (waveCanvas.width !== w || waveCanvas.height !== h) {
-        waveCanvas.width = w;
-        waveCanvas.height = h;
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(ratio, ratio);
-      }
-    }
+function bandName(f){
+  if (f < 3e3) return "ELF / audio-range";
+  if (f < 3e4) return "VLF";
+  if (f < 3e5) return "LF";
+  if (f < 3e6) return "MF";
+  if (f < 3e7) return "HF";
+  if (f < 3e8) return "VHF";
+  if (f < 3e9) return "UHF";
+  return "Microwave";
+}
 
-    [frequency, inductance, capacitance, material, gas].forEach(el => el.addEventListener("input", update));
-    window.addEventListener("resize", () => { resize(); update(); });
-    resize();
-    update();
-    drawWave();
-  </script>
+function drawWave(cycles){
+  const width = 360, mid = 65, amp = 34;
+  let d = `M 0 ${mid}`;
+  for(let x=0;x<=width;x+=3){
+    const y = mid + Math.sin((x/width)*Math.PI*2*cycles)*amp;
+    d += ` L ${x} ${y.toFixed(2)}`;
+  }
+  document.getElementById("wavePath").setAttribute("d", d);
+}
+
+function calculateAll(){
+  const L = Math.max(parseFloat(document.getElementById("L").value) || 0, 1e-12) * 1e-6;
+  const C = Math.max(parseFloat(document.getElementById("C").value) || 0, 1e-12) * 1e-12;
+  const N = Math.max(parseFloat(document.getElementById("ratio").value) || 1, 1);
+  const src = materials[source.value];
+
+  const f = 1 / (2 * Math.PI * Math.sqrt(L * C));
+  const wavelength = 299792458 / f;
+  const impedanceRatio = N * N;
+  const mu0 = 4 * Math.PI * 1e-7;
+
+  let skinStr;
+  let skinDepth = null;
+
+  if (src.conductivity.includes("Insulator")) {
+    skinStr = `N/A (${src.name} is modeled as discharge gas, not RF conductor)`;
+  } else {
+    skinDepth = Math.sqrt(src.resistivity / (Math.PI * f * mu0));
+    skinStr = `${(skinDepth * 1e6).toFixed(1)} μm (in ${src.name})`;
+  }
+
+  document.getElementById("freqOut").textContent = formatFrequency(f);
+  document.getElementById("waveOut").textContent = formatLength(wavelength);
+  document.getElementById("turnsOut").textContent = `${N.toLocaleString()}:1`;
+  document.getElementById("impOut").textContent = `${impedanceRatio.toLocaleString()}:1`;
+  document.getElementById("skinOut").textContent = skinStr;
+  document.getElementById("ratioLabel").textContent = `${N.toLocaleString()}:1`;
+  document.getElementById("ratioSquared").textContent = `${impedanceRatio.toLocaleString()}:1`;
+  document.getElementById("bandOut").textContent = `${formatFrequency(f)} — ${bandName(f)}`;
+  document.getElementById("waveLabel").textContent = `Calculated wavelength: ${formatLength(wavelength)}`;
+
+  const logPos = Math.max(0, Math.min(100, ((Math.log10(f)-3)/(9-3))*100));
+  document.getElementById("freqBar").style.width = `${logPos}%`;
+  drawWave(Math.max(1, Math.min(12, 1 + logPos/9)));
+
+  const ring = document.getElementById("skinRing");
+  const center = document.getElementById("skinCenter");
+  if (skinDepth === null){
+    ring.style.setProperty("--fill","0%");
+    center.textContent = "N/A";
+  } else {
+    const microns = skinDepth * 1e6;
+    const fill = Math.max(3, Math.min(100, 100 - Math.log10(Math.max(microns,0.01))*18));
+    ring.style.setProperty("--fill",`${fill}%`);
+    center.textContent = `${microns.toFixed(1)} μm`;
+  }
+}
+
+document.getElementById("calcBtn").addEventListener("click", calculateAll);
+[source,load,document.getElementById("L"),document.getElementById("C"),document.getElementById("ratio")]
+  .forEach(el => el.addEventListener("input", calculateAll));
+
+calculateAll();
+</script>
 </body>
 </html>
