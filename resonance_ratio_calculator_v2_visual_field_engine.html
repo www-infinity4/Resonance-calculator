@@ -158,8 +158,8 @@
     <section class="card">
       <h2 class="viz-title">152:1 Transformer Visual</h2>
       <svg viewBox="0 0 360 220" aria-label="Transformer visualization">
-        <text x="85" y="26" text-anchor="middle" fill="#eef3ff">Silver signal</text>
-        <text x="275" y="26" text-anchor="middle" fill="#eef3ff">Nickel reservoir</text>
+        <text id="xfrmSrc" x="85" y="26" text-anchor="middle" fill="#eef3ff">Silver signal</text>
+        <text id="xfrmLoad" x="275" y="26" text-anchor="middle" fill="#eef3ff">Nickel reservoir</text>
 
         <path d="M68 55 C40 70,105 80,68 95 C40 110,105 120,68 135 C40 150,105 160,68 175"
               class="coil-line"/>
@@ -171,8 +171,8 @@
         <path d="M92 110 C130 84,140 84,158 110" class="field pulse"/>
         <path d="M202 110 C225 84,245 84,270 110" class="field pulse"/>
       </svg>
-      <div class="result"><span>Turns ratio</span><strong id="ratioLabel">152:1</strong></div>
-      <div class="result"><span>N²</span><strong id="ratioSquared">23,104:1</strong></div>
+      <div class="result"><span>Turns ratio</span><strong id="ratioLabel">—</strong></div>
+      <div class="result"><span>N²</span><strong id="ratioSquared">—</strong></div>
     </section>
 
     <section class="card">
@@ -260,10 +260,20 @@ function drawWave(cycles){
 }
 
 function calculateAll(){
-  const L = Math.max(parseFloat(document.getElementById("L").value) || 0, 1e-12) * 1e-6;
-  const C = Math.max(parseFloat(document.getElementById("C").value) || 0, 1e-12) * 1e-12;
-  const N = Math.max(parseFloat(document.getElementById("ratio").value) || 1, 1);
+  const Lval = parseFloat(document.getElementById("L").value);
+  const Cval = parseFloat(document.getElementById("C").value);
+  const Nval = parseFloat(document.getElementById("ratio").value);
+
+  // Validate: require positive finite numbers
+  if (!isFinite(Lval) || Lval <= 0 || !isFinite(Cval) || Cval <= 0 || !isFinite(Nval) || Nval < 1) {
+    return;
+  }
+
+  const L = Lval * 1e-6;
+  const C = Cval * 1e-12;
+  const N = Math.round(Nval);
   const src = materials[source.value];
+  const loadMat = materials[load.value];
 
   const f = 1 / (2 * Math.PI * Math.sqrt(L * C));
   const wavelength = 299792458 / f;
@@ -290,6 +300,10 @@ function calculateAll(){
   document.getElementById("bandOut").textContent = `${formatFrequency(f)} — ${bandName(f)}`;
   document.getElementById("waveLabel").textContent = `Calculated wavelength: ${formatLength(wavelength)}`;
 
+  // Update SVG transformer labels to reflect selected materials
+  document.getElementById("xfrmSrc").textContent = `${src.name} signal`;
+  document.getElementById("xfrmLoad").textContent = `${loadMat.name} reservoir`;
+
   const logPos = Math.max(0, Math.min(100, ((Math.log10(f)-3)/(9-3))*100));
   document.getElementById("freqBar").style.width = `${logPos}%`;
   drawWave(Math.max(1, Math.min(12, 1 + logPos/9)));
@@ -301,7 +315,14 @@ function calculateAll(){
     center.textContent = "N/A";
   } else {
     const microns = skinDepth * 1e6;
-    const fill = Math.max(3, Math.min(100, 100 - Math.log10(Math.max(microns,0.01))*18));
+    // Scale: fill% decreases logarithmically as skin depth grows.
+    // RING_MAX_LOG=18 maps log10(microns) range to a 0-100% fill.
+    const RING_MIN_FILL = 3;    // minimum visible arc %
+    const RING_MAX_FILL = 100;  // full ring %
+    const RING_LOG_SCALE = 18;  // log10 scaling factor for ring fill
+    const RING_MIN_MICRONS = 0.01; // avoid log(0)
+    const fill = Math.max(RING_MIN_FILL,
+      Math.min(RING_MAX_FILL, RING_MAX_FILL - Math.log10(Math.max(microns, RING_MIN_MICRONS)) * RING_LOG_SCALE));
     ring.style.setProperty("--fill",`${fill}%`);
     center.textContent = `${microns.toFixed(1)} μm`;
   }
