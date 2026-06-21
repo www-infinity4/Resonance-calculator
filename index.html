@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resonance Calculator — Visual Field Engine Suite</title>
+<style>
+  :root {
+    --bg: #09101f;
+    --panel: #121a2f;
+    --panel2: #18223c;
+    --text: #eef3ff;
+    --muted: #9fb0d0;
+    --line: #33466d;
+    --accent: #7aa2ff;
+    --good: #8ee6b0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, #09101f, #111a31);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 0 0 8px; color: var(--accent); text-align: center; }
+  .sub { color: var(--muted); margin-bottom: 36px; text-align: center; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .card {
+    background: linear-gradient(180deg, var(--panel), var(--panel2));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card h2 { margin: 0; font-size: 1.1rem; color: var(--text); }
+  .card p { margin: 0; font-size: .9rem; color: var(--muted); line-height: 1.5; }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    background: rgba(122,162,255,.15);
+    border: 1px solid rgba(122,162,255,.35);
+    color: var(--accent);
+    width: fit-content;
+  }
+  a.btn {
+    display: block;
+    margin-top: auto;
+    padding: 11px 16px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #5d80ff, #8d6cff);
+    color: #fff;
+    font-weight: 700;
+    font-size: .95rem;
+    text-decoration: none;
+    text-align: center;
+  }
+  a.btn:hover { opacity: .88; }
+  .soon {
+    opacity: .5;
+    pointer-events: none;
+    background: linear-gradient(90deg, #3a4a72, #4a3e72);
+  }
+</style>
+</head>
+<body>
+  <h1>Resonance Calculator Suite</h1>
+  <div class="sub">Visual Field Engine — all tools in one place</div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="badge">Version 1</span>
+      <h2>Visual Field Engine v1</h2>
+      <p>LC tank animation · 152:1 transformer · N²=23,104:1 · frequency &amp; wavelength bars · skin-depth ring · Neon/Argon gas correction · canvas wave graphic · 9-material selector.</p>
+      <a class="btn" href="resonance_ratio_calculator_v1_visual_field_engine.html">Open v1 →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge">Version 2</span>
+      <h2>Visual Field Engine v2</h2>
+      <p>Engineering outputs panel · animated LC tank SVG · 152:1 transformer SVG · wave/wavelength bar · skin-depth ring · discharge-gas correction · responsive grid layout · 9-material selector.</p>
+      <a class="btn" href="resonance_ratio_calculator_v2_visual_field_engine.html">Open v2 →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge">Version 3</span>
+      <h2>Resonance Ratio Calculator v3</h2>
+      <p>Infinity Interpretation track · Engineering Output track · full 33-element database (Z 3–70) · Zp/Zs impedance inputs · L/C unit selectors · LC tank · transformer · frequency scale · skin-depth ring · material path diagram.</p>
+      <a class="btn" href="resonance_ratio_calculator_v3_visual_field_engine.html">Open v3 →</a>
+    </div>
+  </div>
+</body>
+</html>
