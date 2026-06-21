@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resonance Ratio Calculator v2 — Visual Field Engine</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --panel: #111a2b;
+      --ink: #e7f0ff;
+      --muted: #9bb2d9;
+      --accent: #36e4ff;
+      --accent2: #9a7dff;
+      --ok: #66ffb3;
+      --warn: #ffd26a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 900px at 20% 10%, #13213f 0%, var(--bg) 55%);
+    }
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.1fr 1fr;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border: 1px solid rgba(159,195,255,.24);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, .24);
+    }
+    h1, h2 { margin: 0 0 10px; font-weight: 700; }
+    h1 { font-size: 1.2rem; color: var(--accent); }
+    h2 { font-size: 1rem; color: #d7e6ff; }
+    .controls { display: grid; gap: 10px; }
+    .row { display: grid; gap: 8px; grid-template-columns: 1fr 120px; align-items: center; }
+    label { color: var(--muted); font-size: .92rem; }
+    input, select {
+      width: 100%;
+      background: #0b1323;
+      color: var(--ink);
+      border: 1px solid #314667;
+      border-radius: 8px;
+      padding: 7px 9px;
+    }
+    .metrics {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+    }
+    .metric {
+      background: #091222;
+      border: 1px solid #2a436d;
+      border-radius: 10px;
+      padding: 9px;
+    }
+    .metric b { display: block; color: var(--accent); font-size: 1rem; }
+    .bars { display: grid; gap: 10px; margin-top: 8px; }
+    .barWrap {
+      background: #0a1221;
+      border: 1px solid #2a436d;
+      border-radius: 10px;
+      padding: 6px;
+    }
+    .bar {
+      height: 16px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0%;
+      transition: width .35s ease;
+    }
+    .barLabel { color: var(--muted); font-size: .86rem; margin-bottom: 5px; display: flex; justify-content: space-between; gap: 10px; }
+    .canvasWrap {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+    canvas {
+      width: 100%;
+      height: 170px;
+      background: #070f1f;
+      border: 1px solid #2a436d;
+      border-radius: 10px;
+    }
+    .transformer {
+      background: #080f1d;
+      border: 1px solid #2a436d;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .coil {
+      height: 18px;
+      border-radius: 999px;
+      border: 2px dashed #7dc5ff;
+      position: relative;
+      overflow: hidden;
+      margin: 6px 0;
+    }
+    .coil::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent 0 8px, rgba(83,247,255,.3) 8px 12px);
+      animation: flow 1.2s linear infinite;
+    }
+    @keyframes flow { from { transform: translateX(0); } to { transform: translateX(20px); } }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #3d5f90;
+      color: #d6e9ff;
+      font-size: .78rem;
+      margin-right: 6px;
+    }
+    .skinDepthRing {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 2px auto 6px;
+      background:
+        radial-gradient(circle at center, #071024 0 34%, transparent 34%),
+        conic-gradient(var(--ok) 0turn, var(--warn) .5turn, #ff6f87 1turn);
+      border: 1px solid #36567f;
+      position: relative;
+      overflow: hidden;
+    }
+    .skinDepthFill {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0 34%, rgba(7,16,36,.88) 34% 100%);
+      transform: scale(.7);
+      transition: transform .3s ease;
+    }
+    .foot { color: #90a8d2; font-size: .82rem; margin-top: 8px; }
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; padding: 12px; }
+      .row { grid-template-columns: 1fr; }
+      canvas { height: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="card">
+      <h1>Resonance Ratio Calculator v2 — Visual Field Engine</h1>
+      <div class="controls">
+        <div class="row">
+          <label for="frequency">Drive Frequency (kHz)</label>
+          <input id="frequency" type="number" min="1" max="50000" value="455" />
+        </div>
+        <div class="row">
+          <label for="inductance">L (µH)</label>
+          <input id="inductance" type="number" min="0.001" step="0.001" value="120" />
+        </div>
+        <div class="row">
+          <label for="capacitance">C (pF)</label>
+          <input id="capacitance" type="number" min="0.001" step="0.001" value="820" />
+        </div>
+        <div class="row">
+          <label for="material">Conductor</label>
+          <select id="material">
+            <option>Silver</option>
+            <option>Nickel</option>
+            <option>Molybdenum</option>
+            <option>Palladium</option>
+            <option>Cadmium</option>
+            <option>Indium</option>
+            <option>Lithium</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="gas">Discharge Gas Correction</label>
+          <select id="gas">
+            <option value="none">None</option>
+            <option value="Neon">Neon</option>
+            <option value="Argon">Argon</option>
+          </select>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><span>LC Resonant Frequency</span><b id="f0"></b></div>
+        <div class="metric"><span>Resonance Ratio (f/f₀)</span><b id="ratio"></b></div>
+        <div class="metric"><span>Wavelength λ</span><b id="lambda"></b></div>
+        <div class="metric"><span>Skin Depth δ</span><b id="skin"></b></div>
+      </div>
+      <div class="bars">
+        <div class="barWrap">
+          <div class="barLabel"><span>Frequency Bar</span><span id="fBarText"></span></div>
+          <div class="bar" id="frequencyBar"></div>
+        </div>
+        <div class="barWrap">
+          <div class="barLabel"><span>Wavelength Bar</span><span id="wBarText"></span></div>
+          <div class="bar" id="wavelengthBar"></div>
+        </div>
+      </div>
+      <p class="foot">Transformer view fixed at <strong>152:1</strong> with impedance ratio <strong>N² = 23,104:1</strong>.</p>
+    </section>
+
+    <section class="card canvasWrap">
+      <div class="transformer">
+        <h2>LC Tank + Transformer Visual</h2>
+        <span class="tag">Primary: 152 turns</span>
+        <span class="tag">Secondary: 1 turn</span>
+        <span class="tag">N² = 23,104:1</span>
+        <div class="coil"></div>
+        <div class="coil"></div>
+      </div>
+      <canvas id="waveCanvas" aria-label="Animated wavelength graphic"></canvas>
+      <div class="transformer">
+        <h2>Skin-Depth Ring</h2>
+        <div class="skinDepthRing">
+          <div class="skinDepthFill" id="skinDepthFill"></div>
+        </div>
+        <div class="metric" style="margin-top:6px"><span>Gas Correction Factor</span><b id="gasFactor"></b></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const MU0 = 4 * Math.PI * 1e-7;
+    const C0 = 299792458;
+    const materials = {
+      Silver: { rho: 1.59e-8, mur: 0.99998 },
+      Nickel: { rho: 6.99e-8, mur: 100 },
+      Molybdenum: { rho: 5.3e-8, mur: 1.0 },
+      Palladium: { rho: 1.05e-7, mur: 1.0 },
+      Cadmium: { rho: 7.4e-8, mur: 1.0 },
+      Indium: { rho: 8.37e-8, mur: 1.0 },
+      Lithium: { rho: 9.28e-8, mur: 1.000022 }
+    };
+    const gasFactors = { none: 1, Neon: 0.94, Argon: 0.89 };
+
+    const ids = (name) => document.getElementById(name);
+    const frequency = ids("frequency");
+    const inductance = ids("inductance");
+    const capacitance = ids("capacitance");
+    const material = ids("material");
+    const gas = ids("gas");
+    const f0 = ids("f0");
+    const ratio = ids("ratio");
+    const lambda = ids("lambda");
+    const skin = ids("skin");
+    const gasFactor = ids("gasFactor");
+    const fBar = ids("frequencyBar");
+    const wBar = ids("wavelengthBar");
+    const fBarText = ids("fBarText");
+    const wBarText = ids("wBarText");
+    const skinDepthFill = ids("skinDepthFill");
+    const waveCanvas = ids("waveCanvas");
+    const ctx = waveCanvas.getContext("2d");
+    let phase = 0;
+    let wavePx = 80;
+
+    function formatFreq(hz) {
+      return hz >= 1e6 ? `${(hz / 1e6).toFixed(3)} MHz` : `${(hz / 1e3).toFixed(3)} kHz`;
+    }
+    function formatMeters(m) {
+      if (m >= 1) return `${m.toFixed(3)} m`;
+      if (m >= 1e-3) return `${(m * 1e3).toFixed(3)} mm`;
+      return `${(m * 1e6).toFixed(3)} µm`;
+    }
+    function update() {
+      const fHz = Math.max(1, Number(frequency.value) || 1) * 1e3;
+      const lH = Math.max(1e-12, Number(inductance.value) || 1) * 1e-6;
+      const cF = Math.max(1e-15, Number(capacitance.value) || 1) * 1e-12;
+      const fRes = 1 / (2 * Math.PI * Math.sqrt(lH * cF));
+      const gasK = gasFactors[gas.value] || 1;
+      const corrF = fHz * gasK;
+      const lam = C0 / corrF;
+      const mat = materials[material.value];
+      const delta = Math.sqrt((2 * mat.rho) / (2 * Math.PI * corrF * MU0 * mat.mur));
+      const rr = fHz / fRes;
+
+      f0.textContent = formatFreq(fRes);
+      ratio.textContent = rr.toFixed(6);
+      lambda.textContent = formatMeters(lam);
+      skin.textContent = formatMeters(delta);
+      gasFactor.textContent = `${gasK.toFixed(2)} × (${gas.value})`;
+
+      fBar.style.width = `${Math.min(100, (fHz / (5e7)) * 100)}%`;
+      wBar.style.width = `${Math.max(4, Math.min(100, (1 / (lam + 1)) * 120))}%`;
+      fBarText.textContent = formatFreq(fHz);
+      wBarText.textContent = formatMeters(lam);
+
+      const depthScale = Math.max(0.35, Math.min(0.95, 0.95 - Math.log10(delta * 1e6 + 1) / 8));
+      skinDepthFill.style.transform = `scale(${depthScale.toFixed(3)})`;
+
+      wavePx = Math.max(24, Math.min(250, lam * 30));
+    }
+
+    function drawWave() {
+      const { width, height } = waveCanvas;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#050b17";
+      ctx.fillRect(0, 0, width, height);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#3ef3ff";
+      ctx.beginPath();
+      for (let x = 0; x <= width; x++) {
+        const y = height / 2 + Math.sin((x / wavePx) * Math.PI * 2 + phase) * (height * 0.24);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = "#8f7aff";
+      ctx.beginPath();
+      for (let x = 0; x <= width; x++) {
+        const y = height / 2 + Math.sin((x / wavePx) * Math.PI * 2 + phase + Math.PI / 2) * (height * 0.14);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      phase += 0.06;
+      requestAnimationFrame(drawWave);
+    }
+
+    function resize() {
+      const ratio = window.devicePixelRatio || 1;
+      const w = Math.floor(waveCanvas.clientWidth * ratio);
+      const h = Math.floor(waveCanvas.clientHeight * ratio);
+      if (waveCanvas.width !== w || waveCanvas.height !== h) {
+        waveCanvas.width = w;
+        waveCanvas.height = h;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(ratio, ratio);
+      }
+    }
+
+    [frequency, inductance, capacitance, material, gas].forEach(el => el.addEventListener("input", update));
+    window.addEventListener("resize", () => { resize(); update(); });
+    resize();
+    update();
+    drawWave();
+  </script>
+</body>
+</html>
